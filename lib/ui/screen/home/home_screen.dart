@@ -1,10 +1,15 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie/ui/constant/color_pallete.dart';
+import 'package:movie/ui/screen/auth/login_screen.dart';
 import 'package:movie/ui/screen/home/section/categories/categories.dart';
 import 'package:movie/ui/screen/home/section/now_playing/now_playing.dart';
 import 'package:movie/ui/screen/home/section/upcoming/upcoming.dart';
+import 'package:movie/ui/screen/user/cubit/user_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,39 +31,63 @@ class _HomeScreenState extends State<HomeScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome Joko 👋',
-                            style: TextStyle(
-                                color: ColorPallete.colorGrey, fontSize: 14),
+                BlocBuilder<UserCubit, UserState>(builder: (context, state) {
+                  if (state is UserLoaded) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Welcome ${state.data.firstName} 👋',
+                                style: TextStyle(
+                                    color: ColorPallete.colorGrey,
+                                    fontSize: 14),
+                              ),
+                              Text(
+                                "Let's Relax and watch a movie !",
+                                style: TextStyle(
+                                    color: ColorPallete.colorWhite,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
                           ),
-                          Text(
-                            "Let's Relax and watch a movie !",
-                            style: TextStyle(
-                                color: ColorPallete.colorWhite,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(60),
-                      child: Image.asset(
-                        'assets/images/image.png',
-                        width: 60,
-                        height: 60,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            final prefs = await SharedPreferences.getInstance();
+                            prefs.clear();
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginScreen(),
+                              ),
+                            );
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(60),
+                            child: Image.network(
+                              state.data.image!,
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  } else if (state is UserFailed) {
+                    return Text(
+                      state.message,
+                      style: TextStyle(color: Colors.white),
+                    );
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                }),
                 const SizedBox(
                   height: 20,
                 ),

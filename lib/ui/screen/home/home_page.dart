@@ -4,6 +4,7 @@ import 'package:movie/ui/screen/home/home_screen.dart';
 import 'package:movie/ui/screen/home/section/categories/cubit/categories_cubit.dart';
 import 'package:movie/ui/screen/home/section/now_playing/cubit/now_playing_cubit.dart';
 import 'package:movie/ui/screen/home/section/upcoming/cubit/upcoming_cubit.dart';
+import 'package:movie/ui/screen/user/cubit/user_cubit.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -20,6 +21,9 @@ class HomePage extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => UpcomingCubit()..getUpcoming(),
+        ),
+        BlocProvider(
+          create: (_) => UserCubit()..gerUser(),
         ),
       ],
       child: const HomeScreen(),

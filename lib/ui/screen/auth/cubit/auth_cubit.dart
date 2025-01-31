@@ -8,6 +8,7 @@ part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository repository;
+  bool isPasswordVisible = true;
 
   AuthCubit(this.repository) : super(AuthInitial());
 
@@ -15,13 +16,14 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       final user = await repository.login(username, password);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool('is_login', true);
-      prefs.setString('name', user.firstName);
-      prefs.setString('username', user.username);
       emit(AuthLoaded(user: user));
     } catch (e) {
       emit(AuthFailed(message: e.toString()));
     }
+  }
+
+  void togglePasswordVisibility() {
+    isPasswordVisible = !isPasswordVisible;
+    emit(AuthPasswordVisibilityChanged(isPasswordVisible));
   }
 }

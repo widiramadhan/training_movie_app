@@ -43,6 +43,8 @@ class MovieRepository {
       ),
     );
 
+    print(result);
+
     return (result.data['results'] as List)
         .map((e) => MovieEntity.fromJson(e))
         .toList();

@@ -7,7 +7,6 @@ import 'package:movie/ui/constant/color_pallete.dart';
 import 'package:movie/ui/constant/constants.dart';
 import 'package:movie/ui/screen/detail/detail_page.dart';
 import 'package:movie/ui/screen/home/section/now_playing/cubit/now_playing_cubit.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class NowPlayingSection extends StatelessWidget {
   const NowPlayingSection({super.key});
@@ -60,15 +59,16 @@ class NowPlayingSection extends StatelessWidget {
                     //     );
                     //   },
                     // )),
-                    onTap: () => PersistentNavBarNavigator.pushNewScreen(
-                      context,
-                      screen: DetailMoviePage(
-                        id: i.id!,
-                      ),
-                      withNavBar: false,
-                      pageTransitionAnimation:
-                          PageTransitionAnimation.cupertino,
-                    ),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailMoviePage(
+                            id: i.id!,
+                          ),
+                        ),
+                      );
+                    },
                     child: Column(
                       children: [
                         Container(
@@ -80,7 +80,7 @@ class NowPlayingSection extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                             image: DecorationImage(
                               image: NetworkImage(
-                                  '${Constants.imageBaseUrl}${'/w154'}${i.posterPath}'),
+                                  '${Constants.imageBaseUrl}${'/original'}${i.posterPath}'),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -104,7 +104,10 @@ class NowPlayingSection extends StatelessWidget {
                 }).toList(),
               );
             } else if (state is NowPlayingFailed) {
-              return Text(state.message);
+              return Text(
+                state.message,
+                style: TextStyle(color: Colors.white),
+              );
             } else {
               return CircularProgressIndicator();
             }

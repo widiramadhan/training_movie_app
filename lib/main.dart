@@ -13,7 +13,8 @@ class MyApp extends StatelessWidget {
 
   Future<bool> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('is_login') ?? false;
+    bool isLogin = prefs.getBool('is_login') ?? false;
+    return isLogin;
   }
 
   @override
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
               useMaterial3: true,
             ),
-            home: isLoggedIn ? const MainPage() : LoginScreen(),
+            home: isLoggedIn ? MainPage() : LoginScreen(),
           );
         });
   }

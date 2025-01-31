@@ -18,3 +18,9 @@ final class AuthFailed extends AuthState {
 
   AuthFailed({required this.message});
 }
+
+final class AuthPasswordVisibilityChanged extends AuthState {
+  final bool isVisible;
+
+  AuthPasswordVisibilityChanged(this.isVisible);
+}

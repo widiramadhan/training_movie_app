@@ -8,7 +8,6 @@ import 'package:movie/ui/constant/constants.dart';
 import 'package:movie/ui/screen/detail/detail_page.dart';
 import 'package:movie/ui/screen/home/section/now_playing/cubit/now_playing_cubit.dart';
 import 'package:movie/ui/screen/home/section/upcoming/cubit/upcoming_cubit.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class UpcomingSection extends StatelessWidget {
   const UpcomingSection({super.key});
@@ -61,14 +60,13 @@ class UpcomingSection extends StatelessWidget {
                       ),
                       items: state.data.map((i) {
                         return GestureDetector(
-                          onTap: () => PersistentNavBarNavigator.pushNewScreen(
+                          onTap: () => Navigator.pushReplacement(
                             context,
-                            screen: DetailMoviePage(
-                              id: i.id!,
+                            MaterialPageRoute(
+                              builder: (context) => DetailMoviePage(
+                                id: i.id!,
+                              ),
                             ),
-                            withNavBar: false,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.cupertino,
                           ),
                           child: Column(
                             children: [
