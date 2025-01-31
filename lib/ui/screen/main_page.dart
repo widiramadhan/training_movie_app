@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:movie/ui/constant/color_pallete.dart';
 import 'package:movie/ui/screen/home/home_page.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:movie/ui/screen/user/profile_page.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -22,9 +23,7 @@ class _MainPageState extends State<MainPage> {
       Text(
         'Search',
       ),
-      Text(
-        'Profile',
-      ),
+      ProfilePage(),
     ];
 
     return Scaffold(
