@@ -7,7 +7,8 @@ import 'package:movie/ui/screen/home/section/upcoming/cubit/upcoming_cubit.dart'
 import 'package:movie/ui/screen/user/cubit/user_cubit.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final Function(int index) onChangePage;
+  const HomePage({super.key, required this.onChangePage});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,9 @@ class HomePage extends StatelessWidget {
           create: (_) => UserCubit()..gerUser(),
         ),
       ],
-      child: const HomeScreen(),
+      child: HomeScreen(
+        onChangePage: onChangePage,
+      ),
     );
   }
 }

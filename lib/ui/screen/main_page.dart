@@ -16,7 +16,13 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      HomePage(),
+      HomePage(
+        onChangePage: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
       Text(
         'Likes',
       ),

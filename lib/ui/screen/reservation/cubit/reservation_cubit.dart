@@ -1,3 +1,4 @@
+import 'dart:developer' as dv;
 import 'dart:math';
 
 import 'package:bloc/bloc.dart';
@@ -17,6 +18,8 @@ class ReservationCubit extends Cubit<ReservationState> {
 
   DateTime? selectedDate;
   String? selectedTime;
+
+  int get selectedSeats => _seats.indexWhere((e) => e == 'selected');
 
   void generateRandomBookedSeats() {
     final random = Random();
@@ -52,13 +55,11 @@ class ReservationCubit extends Cubit<ReservationState> {
   }
 
   void selectDate(DateTime date) {
-    print(date);
-    print(dates);
     if (dates.contains(date)) {
       selectedDate = date;
       emit(ReservationsLoaded(
           seats: List<String>.from(_seats),
-          selectedDate: selectedDate,
+          selectedDate: date,
           selectedTime: selectedTime));
     }
   }
@@ -69,7 +70,7 @@ class ReservationCubit extends Cubit<ReservationState> {
       emit(ReservationsLoaded(
           seats: List<String>.from(_seats),
           selectedDate: selectedDate,
-          selectedTime: selectedTime));
+          selectedTime: time));
     }
   }
 }

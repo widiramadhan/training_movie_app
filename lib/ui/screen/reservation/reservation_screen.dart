@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:movie/domain/entities/ticket.dart';
 import 'package:movie/ui/constant/color_pallete.dart';
 import 'package:movie/ui/screen/reservation/cubit/reservation_cubit.dart';
+import 'package:movie/ui/screen/ticket/ticket_screen.dart';
+import 'package:uuid/uuid.dart';
 
 class ReservationScreen extends StatelessWidget {
   final String imagePath;
@@ -51,13 +54,13 @@ class ReservationScreen extends StatelessWidget {
                           height: 400,
                           fit: BoxFit.cover,
                         ),
-
                         Positioned(
                           bottom: 0,
                           left: 0,
                           right: 0,
                           child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 20),
                             child: Column(
                               children: [
                                 const Text(
@@ -78,7 +81,7 @@ class ReservationScreen extends StatelessWidget {
                                     height: 200,
                                     child: GridView.builder(
                                       gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
                                         crossAxisCount: 10,
                                         crossAxisSpacing: 8,
                                         mainAxisSpacing: 8,
@@ -91,11 +94,13 @@ class ReservationScreen extends StatelessWidget {
                                             cubit.selectSeat(index);
                                           },
                                           child: seatStatus == 'available'
-                                              ? Image.asset('assets/images/available.png')
+                                              ? Image.asset(
+                                                  'assets/images/available.png')
                                               : seatStatus == 'booked'
-                                              ? Image.asset('assets/images/booked.png')
-                                              : Image.asset(
-                                              'assets/images/selected.png'),
+                                                  ? Image.asset(
+                                                      'assets/images/booked.png')
+                                                  : Image.asset(
+                                                      'assets/images/selected.png'),
                                         );
                                       },
                                     ),
@@ -148,15 +153,49 @@ class ReservationScreen extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorPallete.colorOrange,
-                ),
-                onPressed: () {},
-                child: Text(
-                  "Buy Now",
-                  style: TextStyle(color: Colors.white),
-                ),
+              child: BlocBuilder<ReservationCubit, ReservationState>(
+                builder: (context, state) {
+                  if (state is ReservationsLoaded) {
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: ColorPallete.colorOrange,
+                      ),
+                      onPressed: state.selectedDate == null ||
+                              state.selectedTime == null ||
+                              state.seats.isEmpty
+                          ? null
+                          : () {
+                              var id = Uuid();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TicketScreen(
+                                    ticket: TicketEntity(
+                                      id: id.v1(),
+                                      seat: state.seats.toString(),
+                                      date: DateTime(
+                                        state.selectedDate?.year ?? 0,
+                                        state.selectedDate?.month ?? 0,
+                                        state.selectedDate?.day ?? 0,
+                                        int.parse(
+                                            (state.selectedTime ?? '00:00')
+                                                .split(':')[0]),
+                                      ),
+                                      price: 50000,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                      child: Text(
+                        "Buy Now",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  }
+
+                  return const SizedBox();
+                },
               ),
             )
           ],

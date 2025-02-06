@@ -1,18 +1,15 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:movie/ui/constant/color_pallete.dart';
-import 'package:movie/ui/screen/auth/login_screen.dart';
 import 'package:movie/ui/screen/home/section/categories/categories.dart';
 import 'package:movie/ui/screen/home/section/now_playing/now_playing.dart';
 import 'package:movie/ui/screen/home/section/upcoming/upcoming.dart';
+import 'package:movie/ui/screen/search/search_page.dart';
 import 'package:movie/ui/screen/user/cubit/user_cubit.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(int index) onChangePage;
+  const HomeScreen({super.key, required this.onChangePage});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -58,14 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            final prefs = await SharedPreferences.getInstance();
-                            prefs.clear();
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoginScreen(),
-                              ),
-                            );
+                            widget.onChangePage(3);
                           },
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(60),
@@ -93,6 +83,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 TextField(
                   style: TextStyle(color: ColorPallete.colorWhite),
+                  onSubmitted: (value) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchPage(
+                          query: value,
+                        ),
+                      ),
+                    );
+                  },
                   decoration: InputDecoration(
                       hintText: 'Search movie...',
                       border: OutlineInputBorder(

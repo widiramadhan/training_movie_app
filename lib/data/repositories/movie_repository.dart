@@ -9,6 +9,8 @@ class MovieRepository {
   final genreUrl = 'https://api.themoviedb.org/3/genre/movie/list?language=id';
   final nowPlayingUrl =
       'https://api.themoviedb.org/3/movie/now_playing?language=id-ID&page=1&region=ID';
+  searchMovieUrl(String query) =>
+      'https://api.themoviedb.org/3/search/movie?query=$query&include_adult=true&language=id-ID&page=1';
   final upcomingUrl =
       'https://api.themoviedb.org/3/movie/upcoming?language=id-ID&page=1&region=ID';
   final accessToken =
@@ -43,8 +45,6 @@ class MovieRepository {
       ),
     );
 
-    print(result);
-
     return (result.data['results'] as List)
         .map((e) => MovieEntity.fromJson(e))
         .toList();
@@ -78,5 +78,21 @@ class MovieRepository {
     );
 
     return DetailMovieEntity.fromJson(result.data);
+  }
+
+  Future<List<MovieEntity>> searchMovie(String query) async {
+    final result = await dio.get(
+      searchMovieUrl(query),
+      options: Options(
+        headers: {
+          'Authorization': accessToken,
+          'Content-Type': 'application/json'
+        },
+      ),
+    );
+
+    return (result.data['results'] as List)
+        .map((e) => MovieEntity.fromJson(e))
+        .toList();
   }
 }

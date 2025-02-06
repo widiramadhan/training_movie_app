@@ -36,6 +36,11 @@ class MyApp extends StatelessWidget {
             title: 'Flutter Demo',
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              appBarTheme: AppBarTheme(
+                iconTheme: IconThemeData(
+                  color: Colors.white,
+                ),
+              ),
               useMaterial3: true,
             ),
             home: isLoggedIn ? MainPage() : LoginScreen(),
