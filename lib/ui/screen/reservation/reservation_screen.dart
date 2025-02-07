@@ -4,13 +4,19 @@ import 'package:intl/intl.dart';
 import 'package:movie/domain/entities/ticket.dart';
 import 'package:movie/ui/constant/color_pallete.dart';
 import 'package:movie/ui/screen/reservation/cubit/reservation_cubit.dart';
+import 'package:movie/ui/screen/success/success_page.dart';
+import 'package:movie/ui/screen/ticket/ticket_page.dart';
 import 'package:movie/ui/screen/ticket/ticket_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
 class ReservationScreen extends StatelessWidget {
+  final int idMovie;
+  final String title;
   final String imagePath;
 
-  ReservationScreen({required this.imagePath});
+  ReservationScreen(
+      {required this.idMovie, required this.title, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +124,10 @@ class ReservationScreen extends StatelessWidget {
                     _buildDateSelector(cubit, state),
                     const SizedBox(height: 24),
                     _buildTimeSelector(cubit, state),
+                    const SizedBox(
+                      height: 24,
+                    ),
+                    _buildButton(cubit, state, context)
                   ],
                 ),
               );
@@ -125,80 +135,6 @@ class ReservationScreen extends StatelessWidget {
 
             return const SizedBox.shrink();
           },
-        ),
-      ),
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        height: 100,
-        padding: EdgeInsets.all(16),
-        color: ColorPallete.colorPrimary,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Total Price',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  Text(
-                    'Rp. 50.000',
-                    style: TextStyle(color: Colors.white, fontSize: 24),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-              child: BlocBuilder<ReservationCubit, ReservationState>(
-                builder: (context, state) {
-                  if (state is ReservationsLoaded) {
-                    return ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: ColorPallete.colorOrange,
-                      ),
-                      onPressed: state.selectedDate == null ||
-                              state.selectedTime == null ||
-                              state.seats.isEmpty
-                          ? null
-                          : () {
-                              var id = Uuid();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TicketScreen(
-                                    ticket: TicketEntity(
-                                      id: id.v1(),
-                                      seat: state.seats.toString(),
-                                      date: DateTime(
-                                        state.selectedDate?.year ?? 0,
-                                        state.selectedDate?.month ?? 0,
-                                        state.selectedDate?.day ?? 0,
-                                        int.parse(
-                                            (state.selectedTime ?? '00:00')
-                                                .split(':')[0]),
-                                      ),
-                                      price: 50000,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                      child: Text(
-                        "Buy Now",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    );
-                  }
-
-                  return const SizedBox();
-                },
-              ),
-            )
-          ],
         ),
       ),
     );
@@ -374,6 +310,80 @@ class ReservationScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildButton(
+      ReservationCubit cubit, ReservationsLoaded state, BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 100,
+      padding: EdgeInsets.all(16),
+      color: ColorPallete.colorPrimary,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total Price',
+                  style: TextStyle(color: Colors.white, fontSize: 18)),
+              Text('Rp. 50.000',
+                  style: TextStyle(color: Colors.white, fontSize: 24)),
+            ],
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: ColorPallete.colorOrange),
+            onPressed: (state.selectedDate != null &&
+                    state.selectedTime != null &&
+                    state.selectedSeat != null)
+                ? () async {
+                    print("Selected Seat: ${state.selectedSeat}");
+                    print("Selected Date: ${state.selectedDate}");
+                    print("Selected Time: ${state.selectedTime}");
+
+                    var id = Uuid();
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    List<String>? dataTicket =
+                        await prefs.getStringList('ticket') ?? [];
+
+                    // dataTicket.clear();
+
+                    var idTransaksi = id.v1();
+
+                    var ticketData = TicketEntity(
+                        id: idTransaksi,
+                        seat: cubit.selectedSeat ?? '',
+                        date: DateTime(
+                          state.selectedDate?.year ?? 0,
+                          state.selectedDate?.month ?? 0,
+                          state.selectedDate?.day ?? 0,
+                          int.parse(
+                              (state.selectedTime ?? '00:00').split(':')[0]),
+                        ),
+                        price: 50000,
+                        title: title,
+                        urlImage: imagePath,
+                        idMovie: idMovie);
+
+                    dataTicket.add(ticketData.toJson());
+
+                    prefs.setStringList('ticket', dataTicket);
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SuccessPage(
+                            id: idTransaksi,
+                          ),
+                        ));
+                  }
+                : null,
+            child: Text("Buy Now", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }

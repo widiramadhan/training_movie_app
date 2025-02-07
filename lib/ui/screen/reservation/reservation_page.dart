@@ -4,9 +4,11 @@ import 'package:movie/ui/screen/reservation/cubit/reservation_cubit.dart';
 import 'package:movie/ui/screen/reservation/reservation_screen.dart';
 
 class ReservationPage extends StatelessWidget {
+  final int idMovie;
+  final String title;
   final String imagePath;
 
-  const ReservationPage({super.key, required this.imagePath});
+  const ReservationPage({super.key, required this.idMovie, required this.title, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class ReservationPage extends StatelessWidget {
           create: (_) => ReservationCubit()..generateRandomBookedSeats(),
         ),
       ],
-      child: ReservationScreen(imagePath: imagePath,),
+      child: ReservationScreen(idMovie: idMovie, title: title, imagePath: imagePath,),
     );
   }
 }

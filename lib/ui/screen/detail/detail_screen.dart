@@ -160,6 +160,8 @@ class DetailMovieScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ReservationPage(
+                          idMovie: state.data.id ?? 0,
+                          title: state.data.title ?? '',
                           imagePath:
                           '${Constants.imageBaseUrl}/original${state.data.posterPath ?? ''}',
                         ),
